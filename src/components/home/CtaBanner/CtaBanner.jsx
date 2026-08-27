@@ -3,10 +3,10 @@ import { ArrowRight } from "lucide-react";
 
 import { Button, Container, Section } from "@/components/ui";
 
-import { homepage } from "@/data/homepage";
+import { ctaBanner } from "@/data/ctaBanner";
 
 export default function CtaBanner() {
-  const cta = homepage.ctaBanner;
+  const cta = ctaBanner;
 
   return (
     <Section className="py-24">

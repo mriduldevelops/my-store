@@ -4,14 +4,12 @@ import SectionTitle from "@/components/common/SectionTitle";
 
 import TestimonialCard from "@/components/common/TestimonialCard";
 
-import { homepage } from "@/data/homepage";
+import { testimonials } from "@/data/testimonials";
 
 export default function Testimonials() {
   return (
     <Section className="bg-[#FCFCFA]">
-
       <Container>
-
         <SectionTitle
           title="What Our Customers Say"
           subtitle="Real experiences from customers who trust our products."
@@ -25,16 +23,11 @@ export default function Testimonials() {
             lg:grid-cols-3
           "
         >
-          {homepage.testimonials.map((testimonial) => (
-            <TestimonialCard
-              key={testimonial.id}
-              testimonial={testimonial}
-            />
+          {testimonials.map((testimonial) => (
+            <TestimonialCard key={testimonial.id} testimonial={testimonial} />
           ))}
         </div>
-
       </Container>
-
     </Section>
   );
 }

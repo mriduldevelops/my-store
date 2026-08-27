@@ -3,7 +3,7 @@ import SectionTitle from "@/components/common/SectionTitle";
 
 import FeaturedProductsGrid from "./FeaturedProductsGrid";
 
-import { products } from "@/data/products";
+import { featuredProducts } from "@/data/featuredProducts";
 
 export default function FeaturedProducts() {
   return (
@@ -19,7 +19,7 @@ export default function FeaturedProducts() {
         />
 
         <FeaturedProductsGrid
-          products={products}
+          products={featuredProducts}
         />
 
       </Container>

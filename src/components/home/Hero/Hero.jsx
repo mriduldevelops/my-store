@@ -1,12 +1,11 @@
 import { Container, Section } from "@/components/ui";
 
-import { homepage } from "@/data/homepage";
+import { hero } from "@/data/hero";
 
 import HeroContent from "./HeroContent";
 import HeroImage from "./HeroImage";
 
 export default function Hero() {
-  const { hero } = homepage;
 
   return (
     <Section className="overflow-hidden">

@@ -4,7 +4,7 @@ import SectionTitle from "@/components/common/SectionTitle";
 
 import ProductGrid from "@/components/product/ProductGrid";
 
-import { homepage } from "@/data/homepage";
+import { newArrivals } from "@/data/newArrivals";
 
 export default function NewArrivals() {
   return (
@@ -20,7 +20,7 @@ export default function NewArrivals() {
         />
 
         <ProductGrid
-          products={homepage.newArrivals}
+          products={newArrivals}
         />
 
       </Container>
