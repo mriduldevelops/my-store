@@ -1,6 +1,7 @@
 export const products = [
   {
     id: 1,
+
     slug: "minimal-leather-wallet",
 
     brand: "Urban Craft",
@@ -11,8 +12,94 @@ export const products = [
 
     compareAtPrice: 2999,
 
+    stock: 20,
+
+    rating: 4.8,
+
+    reviewCount: 24,
+
     images: [
       "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+    ],
+
+    variants: [
+      {
+        id: "black-small",
+
+        options: {
+          Color: "Black",
+          Size: "Small",
+        },
+
+        price: 1999,
+
+        compareAtPrice: 2299,
+
+        stock: 10,
+
+        sku: "MW-BLK-S",
+
+        image: "/images/products/wallet.webp",
+      },
+
+      {
+        id: "black-large",
+
+        options: {
+          Color: "Black",
+          Size: "Large",
+        },
+
+        price: 2299,
+
+        compareAtPrice: 2599,
+
+        stock: 5,
+
+        sku: "MW-BLK-L",
+
+        image: "/images/products/wallet.webp",
+      },
+
+      {
+        id: "brown-small",
+
+        options: {
+          Color: "Brown",
+          Size: "Small",
+        },
+
+        price: 2099,
+
+        compareAtPrice: 2399,
+
+        stock: 8,
+
+        sku: "MW-BRN-S",
+
+        image: "/images/products/wallet.webp",
+      },
+
+      {
+        id: "brown-large",
+
+        options: {
+          Color: "Brown",
+          Size: "Large",
+        },
+
+        price: 2399,
+
+        compareAtPrice: 2699,
+
+        stock: 3,
+
+        sku: "MW-BRN-L",
+
+        image: "/images/products/wallet.webp",
+      },
     ],
   },
 
@@ -28,9 +115,7 @@ export const products = [
 
     compareAtPrice: 5299,
 
-    images: [
-      "/images/products/bag.webp",
-    ],
+    images: ["/images/products/bag.webp"],
   },
 
   {
@@ -45,9 +130,7 @@ export const products = [
 
     compareAtPrice: 7999,
 
-    images: [
-      "/images/products/watch.webp",
-    ],
+    images: ["/images/products/watch.webp"],
   },
 
   {
@@ -62,177 +145,154 @@ export const products = [
 
     compareAtPrice: 9999,
 
+    images: ["/images/products/headphone.webp"],
+  },
+  {
+    id: 5,
+
+    slug: "minimalleather-wallet",
+
+    brand: "Urban Craft",
+
+    name: "MinimaLeather Wallet",
+
+    shortDescription:
+      "A premium everyday wallet crafted with durable materials and timeless design.",
+
+    description:
+      "This premium leather wallet is designed for everyday use. Its minimal profile provides practical storage while maintaining a clean and timeless appearance.",
+
+    price: 2499,
+
+    compareAtPrice: 2999,
+
+    stock: 20,
+
+    rating: 4.8,
+
+    reviewCount: 24,
+
     images: [
-      "/images/products/headphone.webp",
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+    ],
+
+    variants: [
+      {
+        name: "Color",
+        options: ["Black", "Brown", "Tan"],
+      },
+      {
+        name: "Size",
+        options: ["Small", "Medium", "Large"],
+      },
+    ],
+
+    specifications: [
+      {
+        label: "Material",
+        value: "Premium Leather",
+      },
+      {
+        label: "Dimensions",
+        value: "11 × 9 × 2 cm",
+      },
+      {
+        label: "Weight",
+        value: "120 g",
+      },
+      {
+        label: "Country of Origin",
+        value: "India",
+      },
     ],
   },
   {
-  id: 5,
+    id: 6,
 
-  slug: "minimalleather-wallet",
+    slug: "new-leather-wallet",
 
-  brand: "Urban Craft",
+    brand: "Urban Craft",
 
-  name: "MinimaLeather Wallet",
+    name: "New Leather Wallet",
 
-  shortDescription:
-    "A premium everyday wallet crafted with durable materials and timeless design.",
+    category: "wallets",
 
-  description:
-    "This premium leather wallet is designed for everyday use. Its minimal profile provides practical storage while maintaining a clean and timeless appearance.",
+    shortDescription:
+      "A premium everyday wallet crafted with durable materials.",
 
-  price: 2499,
+    description: "This premium leather wallet is designed for everyday use.",
 
-  compareAtPrice: 2999,
+    price: 2499,
 
-  stock: 20,
+    compareAtPrice: 2999,
 
-  rating: 4.8,
+    stock: 20,
 
-  reviewCount: 24,
+    rating: 4.8,
 
-  images: [
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-  ],
+    reviewCount: 24,
 
-  variants: [
-    {
-      name: "Color",
-      options: [
-        "Black",
-        "Brown",
-        "Tan",
-      ],
-    },
-    {
-      name: "Size",
-      options: [
-        "Small",
-        "Medium",
-        "Large",
-      ],
-    },
-  ],
+    images: [
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+    ],
 
-  specifications: [
-    {
-      label: "Material",
-      value: "Premium Leather",
-    },
-    {
-      label: "Dimensions",
-      value: "11 × 9 × 2 cm",
-    },
-    {
-      label: "Weight",
-      value: "120 g",
-    },
-    {
-      label: "Country of Origin",
-      value: "India",
-    },
-  ],
-},
-{
-  id: 6,
+    variants: [
+      {
+        name: "Color",
+        options: ["Black", "Brown", "Tan"],
+      },
+    ],
 
-  slug: "new-leather-wallet",
+    specifications: [
+      {
+        label: "Material",
+        value: "Premium Leather",
+      },
+    ],
+  },
+  {
+    id: 7,
 
-  brand: "Urban Craft",
+    slug: "leather-wallet",
 
-  name: "New Leather Wallet",
+    brand: "Urban Craft",
 
-  category: "wallets",
+    name: "Leather Wallet",
 
-  shortDescription:
-    "A premium everyday wallet crafted with durable materials.",
+    shortDescription:
+      "A premium everyday wallet crafted with durable materials and timeless design.",
 
-  description:
-    "This premium leather wallet is designed for everyday use.",
+    price: 2499,
 
-  price: 2499,
+    compareAtPrice: 2999,
 
-  compareAtPrice: 2999,
+    stock: 20,
 
-  stock: 20,
+    rating: 4.8,
 
-  rating: 4.8,
+    reviewCount: 24,
 
-  reviewCount: 24,
+    variants: [
+      {
+        name: "Color",
+        options: ["Black", "Brown", "Tan"],
+      },
+      {
+        name: "Size",
+        options: ["Small", "Medium", "Large"],
+      },
+    ],
 
-  images: [
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-  ],
-
-  variants: [
-    {
-      name: "Color",
-      options: [
-        "Black",
-        "Brown",
-        "Tan",
-      ],
-    },
-  ],
-
-  specifications: [
-    {
-      label: "Material",
-      value: "Premium Leather",
-    },
-  ],
-},
-{
-  id: 7,
-
-  slug: "leather-wallet",
-
-  brand: "Urban Craft",
-
-  name: "Leather Wallet",
-
-  shortDescription:
-    "A premium everyday wallet crafted with durable materials and timeless design.",
-
-  price: 2499,
-
-  compareAtPrice: 2999,
-
-  stock: 20,
-
-  rating: 4.8,
-
-  reviewCount: 24,
-
-  variants: [
-    {
-      name: "Color",
-      options: [
-        "Black",
-        "Brown",
-        "Tan",
-      ],
-    },
-    {
-      name: "Size",
-      options: [
-        "Small",
-        "Medium",
-        "Large",
-      ],
-    },
-  ],
-
-  images: [
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-    "/images/products/wallet.webp",
-  ],
-}
+    images: [
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+      "/images/products/wallet.webp",
+    ],
+  },
 ];

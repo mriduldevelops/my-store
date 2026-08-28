@@ -1,12 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import GalleryThumbnail from "./GalleryThumbnail";
 import GalleryImage from "./GalleryImage";
 
-export default function ProductGallery({ product }) {
+export default function ProductGallery({
+  product,
+  selectedImage: externalSelectedImage,
+}) {
   const [selectedImage, setSelectedImage] = useState(0);
+
+  /*
+   * When ProductInfo selects a variant image,
+   * find that image inside the product images array.
+   */
+
+  useEffect(() => {
+    if (!externalSelectedImage) {
+      return;
+    }
+
+    const imageIndex = product.images?.findIndex(
+      (image) => image === externalSelectedImage
+    );
+
+    if (
+      imageIndex !== undefined &&
+      imageIndex >= 0
+    ) {
+      setSelectedImage(imageIndex);
+    }
+  }, [
+    externalSelectedImage,
+    product.images,
+  ]);
+
+  /*
+   * No images
+   */
 
   if (!product?.images?.length) {
     return (

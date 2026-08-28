@@ -1,8 +1,7 @@
 import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import ReduxProvider from "@/redux/Provider";
 import Layout from "@/components/layout/Layout";
-
+import ReduxProvider from "@/providers/ReduxProvider";
 
 export const bodyFont = Poppins({
   subsets: ["latin"],
@@ -27,7 +26,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${bodyFont.variable} ${headingFont.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col overflow-x-hidden">
         <ReduxProvider>
           <Layout>{children}</Layout>
         </ReduxProvider>
