@@ -1,6 +1,6 @@
 export const products = [
   {
-    id: 1,
+    id: "68c123abc456789012345671",
 
     slug: "minimal-leather-wallet",
 
@@ -148,7 +148,7 @@ export const products = [
     images: ["/images/products/headphone.webp"],
   },
   {
-    id: 5,
+    id: "68c123abc456789012345676",
 
     slug: "minimalleather-wallet",
 
@@ -210,7 +210,7 @@ export const products = [
     ],
   },
   {
-    id: 6,
+    id: "68c123abc456789012345677",
 
     slug: "new-leather-wallet",
 
@@ -257,7 +257,7 @@ export const products = [
     ],
   },
   {
-    id: 7,
+    id: "68c123abc456789012345678",
 
     slug: "leather-wallet",
 

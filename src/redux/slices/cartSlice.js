@@ -10,56 +10,51 @@ const cartSlice = createSlice({
   initialState,
 
   reducers: {
-    /*
-     * Add product to cart
-     */
-
     addToCart: (state, action) => {
       const newItem = action.payload;
-
-      /*
-       * A product + variant combination is
-       * considered one cart item.
-       */
 
       const existingItem = state.items.find(
         (item) =>
           item.productId === newItem.productId &&
-          item.variantId === newItem.variantId,
+          item.variantId === newItem.variantId
       );
 
       if (existingItem) {
         existingItem.quantity = Math.min(
           existingItem.quantity + newItem.quantity,
-          newItem.maxStock,
+          newItem.maxStock
         );
       } else {
         state.items.push(newItem);
       }
     },
 
-    /*
-     * Remove product from cart
-     */
-
     removeFromCart: (state, action) => {
-      const { productId, variantId } = action.payload;
+      const {
+        productId,
+        variantId,
+      } = action.payload;
 
       state.items = state.items.filter(
         (item) =>
-          !(item.productId === productId && item.variantId === variantId),
+          !(
+            item.productId === productId &&
+            item.variantId === variantId
+          )
       );
     },
 
-    /*
-     * Update quantity
-     */
-
     updateQuantity: (state, action) => {
-      const { productId, variantId, quantity } = action.payload;
+      const {
+        productId,
+        variantId,
+        quantity,
+      } = action.payload;
 
       const item = state.items.find(
-        (item) => item.productId === productId && item.variantId === variantId,
+        (item) =>
+          item.productId === productId &&
+          item.variantId === variantId
       );
 
       if (!item) {
@@ -72,37 +67,59 @@ const cartSlice = createSlice({
             !(
               cartItem.productId === productId &&
               cartItem.variantId === variantId
-            ),
+            )
         );
 
         return;
       }
 
-      item.quantity = quantity;
+      item.quantity = Math.min(
+        quantity,
+        item.maxStock
+      );
     },
-
-    /*
-     * Clear entire cart
-     */
 
     clearCart: (state) => {
       state.items = [];
     },
+
+    /*
+     * Restore cart from localStorage
+     */
+
+    hydrateCart: (state, action) => {
+      state.items = action.payload;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  updateQuantity,
+  clearCart,
+  hydrateCart,
+} = cartSlice.actions;
 
-export const selectCartItems = (state) => state.cart.items;
+/*
+ * Selectors
+ */
+
+export const selectCartItems = (state) =>
+  state.cart.items;
 
 export const selectCartCount = (state) =>
-  state.cart.items.reduce((total, item) => total + item.quantity, 0);
+  state.cart.items.reduce(
+    (total, item) =>
+      total + item.quantity,
+    0
+  );
 
 export const selectCartSubtotal = (state) =>
   state.cart.items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
+    (total, item) =>
+      total + item.price * item.quantity,
+    0
   );
 
 export default cartSlice.reducer;

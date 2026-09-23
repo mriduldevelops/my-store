@@ -9,15 +9,8 @@ import { removeFromCart, updateQuantity } from "@/redux/slices/cartSlice";
 export default function CartItem({ item }) {
   const dispatch = useDispatch();
 
-  const handleDecrease = () => {
+  const decreaseQuantity = () => {
     if (item.quantity <= 1) {
-      dispatch(
-        removeFromCart({
-          productId: item.productId,
-          variantId: item.variantId,
-        }),
-      );
-
       return;
     }
 
@@ -30,8 +23,8 @@ export default function CartItem({ item }) {
     );
   };
 
-  const handleIncrease = () => {
-    if (item.quantity >= item.maxStock) {
+  const increaseQuantity = () => {
+    if (item.maxStock && item.quantity >= item.maxStock) {
       return;
     }
 
@@ -53,17 +46,19 @@ export default function CartItem({ item }) {
     );
   };
 
+  const itemTotal = item.price * item.quantity;
+
   return (
-    <div className="flex gap-4 border-b border-border py-5">
+    <div className="flex gap-4 py-6 sm:gap-5">
       {/* Product Image */}
 
-      <div className="relative h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+      <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-32 sm:w-28">
         {item.productImage ? (
           <Image
             src={item.productImage}
             alt={item.productName}
             fill
-            sizes="80px"
+            sizes="112px"
             className="object-cover"
           />
         ) : (
@@ -73,33 +68,29 @@ export default function CartItem({ item }) {
         )}
       </div>
 
-      {/* Product Details */}
+      {/* Product Information */}
 
-      <div className="min-w-0 flex-1">
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Name + Remove */}
+
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="truncate text-sm font-medium">{item.productName}</h3>
+          <div>
+            <h3 className="text-sm font-semibold sm:text-base">
+              {item.productName}
+            </h3>
 
             {/* Variants */}
 
-            {Object.entries(item.variants || {}).length > 0 && (
-              <div className="mt-1 space-y-0.5">
+            {Object.keys(item.variants || {}).length > 0 && (
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
                 {Object.entries(item.variants).map(([name, value]) => (
-                  <p key={name} className="text-xs text-gray-500">
+                  <span key={name} className="text-xs text-gray-500">
                     {name}: {value}
-                  </p>
+                  </span>
                 ))}
               </div>
             )}
-
-            {/* SKU */}
-
-            {item.sku && (
-              <p className="mt-1 text-xs text-gray-400">SKU: {item.sku}</p>
-            )}
           </div>
-
-          {/* Remove */}
 
           <button
             type="button"
@@ -111,31 +102,38 @@ export default function CartItem({ item }) {
           </button>
         </div>
 
+        {/* SKU */}
+
+        {item.sku && (
+          <p className="mt-2 text-xs text-gray-400">SKU: {item.sku}</p>
+        )}
+
         {/* Bottom */}
 
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-4 pt-5">
           {/* Quantity */}
 
-          <div className="flex items-center rounded-lg border border-border">
+          <div className="flex items-center rounded-lg border border-gray-200">
             <button
               type="button"
-              onClick={handleDecrease}
+              onClick={decreaseQuantity}
+              disabled={item.quantity <= 1}
+              className="flex h-9 w-9 items-center justify-center text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               aria-label="Decrease quantity"
-              className="flex h-8 w-8 items-center justify-center text-gray-600 transition hover:bg-gray-50"
             >
               <Minus size={14} />
             </button>
 
-            <span className="flex h-8 min-w-8 items-center justify-center text-sm">
+            <span className="flex h-9 min-w-9 items-center justify-center border-x border-gray-200 px-2 text-sm">
               {item.quantity}
             </span>
 
             <button
               type="button"
-              onClick={handleIncrease}
-              disabled={item.quantity >= item.maxStock}
+              onClick={increaseQuantity}
+              disabled={item.maxStock && item.quantity >= item.maxStock}
+              className="flex h-9 w-9 items-center justify-center text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               aria-label="Increase quantity"
-              className="flex h-8 w-8 items-center justify-center text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Plus size={14} />
             </button>
@@ -143,9 +141,17 @@ export default function CartItem({ item }) {
 
           {/* Price */}
 
-          <p className="text-sm font-semibold">
-            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
-          </p>
+          <div className="text-right">
+            <p className="text-base font-semibold">
+              ₹{itemTotal.toLocaleString("en-IN")}
+            </p>
+
+            {item.quantity > 1 && (
+              <p className="mt-1 text-xs text-gray-400">
+                ₹{item.price.toLocaleString("en-IN")} each
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
