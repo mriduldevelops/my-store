@@ -34,7 +34,11 @@ export default function ProductInfo({
     }
 
     return product.variants.find((variant) => {
-      return Object.entries(variant.options).every(
+      if (variant.isActive === false) {
+        return false;
+      }
+
+      return Object.entries(variant.options || {}).every(
         ([name, value]) => selectedVariants[name] === value,
       );
     });
@@ -103,7 +107,7 @@ export default function ProductInfo({
     }
 
     const cartItem = {
-      productId: product.id,
+      productId: product._id,
 
       productName: product.name,
 
@@ -111,7 +115,7 @@ export default function ProductInfo({
 
       productImage: selectedVariant?.image ?? product.images?.[0] ?? null,
 
-      variantId: selectedVariant?.id ?? null,
+      variantId: selectedVariant?._key ?? null,
 
       variants: selectedVariant?.options ?? {},
 
@@ -141,9 +145,9 @@ export default function ProductInfo({
     }
 
     console.log("Buy now:", {
-      productId: product.id,
+      productId: product._id,
 
-      variantId: selectedVariant?.id ?? null,
+      variantId: selectedVariant?._key ?? null,
 
       quantity,
 

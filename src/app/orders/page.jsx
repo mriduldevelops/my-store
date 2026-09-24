@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Package } from "lucide-react";
 
@@ -17,9 +17,13 @@ export default function OrdersPage() {
 
   const orders = useSelector(selectOrders);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const loadOrders = async () => {
       try {
+        setLoading(true);
+
         const response = await fetch("/api/orders", {
           method: "GET",
           credentials: "include",
@@ -30,12 +34,15 @@ export default function OrdersPage() {
 
         if (!response.ok) {
           console.error(data.message || "Failed to load orders.");
+
           return;
         }
 
         dispatch(setOrders(data.orders || []));
       } catch (error) {
         console.error("LOAD_ORDERS_ERROR:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -64,7 +71,11 @@ export default function OrdersPage() {
             </div>
           </div>
 
-          {orders.length === 0 ? (
+          {loading ? (
+            <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center">
+              <p className="text-sm text-gray-500">Loading your orders...</p>
+            </div>
+          ) : orders.length === 0 ? (
             <OrdersEmpty />
           ) : (
             <div className="space-y-5">

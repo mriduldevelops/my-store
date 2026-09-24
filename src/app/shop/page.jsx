@@ -1,28 +1,11 @@
-"use client";
+import ShopPageClient from "@/components/shop/ShopPageClient";
 
-import { useState } from "react";
+import { getProducts } from "@/sanity/lib/products";
 
-import ShopLayout from "@/components/shop/ShopLayout";
-import ShopToolbar from "@/components/shop/ShopToolbar";
-import FilterSidebar from "@/components/shop/FilterSidebar";
-import Pagination from "@/components/shop/Pagination";
+export const revalidate = 60;
 
-import ProductGrid from "@/components/product/ProductGrid";
+export default async function ShopPage() {
+  const products = await getProducts();
 
-import { products } from "@/data/products";
-
-export default function ShopPage() {
-  const [page, setPage] = useState(1);
-
-  return (
-    <ShopLayout
-      toolbar={<ShopToolbar total={products.length} />}
-      sidebar={<FilterSidebar />}
-      pagination={
-        <Pagination currentPage={page} totalPages={5} onPageChange={setPage} />
-      }
-    >
-      <ProductGrid products={products} />
-    </ShopLayout>
-  );
+  return <ShopPageClient products={products} />;
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useSelector } from "react-redux";
 
+import SanityProductImage from "@/components/product/SanityProductImage";
 import { selectCartItems, selectCartSubtotal } from "@/redux/slices/cartSlice";
 
 export default function CheckoutSummary() {
@@ -51,8 +51,8 @@ export default function CheckoutSummary() {
 
               <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                 {item.productImage ? (
-                  <Image
-                    src={item.productImage}
+                  <SanityProductImage
+                    image={item.productImage}
                     alt={item.productName}
                     fill
                     sizes="64px"

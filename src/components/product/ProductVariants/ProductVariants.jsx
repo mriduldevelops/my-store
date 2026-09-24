@@ -47,11 +47,11 @@ export default function ProductVariants({
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-medium">{name}</h3>
 
-            {selectedVariants[name] && (
+            {/* {selectedVariants[name] && (
               <span className="text-sm text-gray-500">
                 {selectedVariants[name]}
               </span>
-            )}
+            )} */}
           </div>
 
           {/* Options */}

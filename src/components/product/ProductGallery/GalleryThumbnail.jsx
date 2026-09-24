@@ -1,5 +1,11 @@
 import Image from "next/image";
 
+import SanityProductImage from "../SanityProductImage";
+
+const isSanityImage = (value) => {
+  return !!value && typeof value === "object" && "asset" in value;
+};
+
 export default function GalleryThumbnail({
   images,
   selectedImage,
@@ -34,13 +40,22 @@ export default function GalleryThumbnail({
               }
             `}
           >
-            <Image
-              src={image}
-              alt={`${productName} thumbnail ${index + 1}`}
-              fill
-              sizes="88px"
-              className="object-cover"
-            />
+            {isSanityImage(image) ? (
+              <SanityProductImage
+                image={image}
+                alt={`${productName} thumbnail ${index + 1}`}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <Image
+                src={image}
+                alt={`${productName} thumbnail ${index + 1}`}
+                fill
+                sizes="88px"
+                className="object-cover"
+              />
+            )}
           </button>
         );
       })}

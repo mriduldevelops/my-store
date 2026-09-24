@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 
+import SanityProductImage from "@/components/product/SanityProductImage";
 import { removeFromCart, updateQuantity } from "@/redux/slices/cartSlice";
 
 export default function CartItem({ item }) {
@@ -54,8 +54,8 @@ export default function CartItem({ item }) {
 
       <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-32 sm:w-28">
         {item.productImage ? (
-          <Image
-            src={item.productImage}
+          <SanityProductImage
+            image={item.productImage}
             alt={item.productName}
             fill
             sizes="112px"

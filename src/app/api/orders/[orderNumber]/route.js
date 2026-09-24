@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
+
 import { getAuthenticatedUser } from "@/lib/getAuthenticatedUser";
 
 export async function GET(request, { params }) {
@@ -10,8 +12,7 @@ export async function GET(request, { params }) {
     if (!user) {
       return NextResponse.json(
         {
-          success: false,
-          message: "Authentication required.",
+          message: "Unauthorized.",
         },
         {
           status: 401,
@@ -24,7 +25,6 @@ export async function GET(request, { params }) {
     if (!orderNumber) {
       return NextResponse.json(
         {
-          success: false,
           message: "Order number is required.",
         },
         {
@@ -32,6 +32,8 @@ export async function GET(request, { params }) {
         },
       );
     }
+
+    await connectDB();
 
     const order = await Order.findOne({
       orderNumber,
@@ -41,7 +43,6 @@ export async function GET(request, { params }) {
     if (!order) {
       return NextResponse.json(
         {
-          success: false,
           message: "Order not found.",
         },
         {
@@ -50,17 +51,20 @@ export async function GET(request, { params }) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      order,
-    });
+    return NextResponse.json(
+      {
+        order,
+      },
+      {
+        status: 200,
+      },
+    );
   } catch (error) {
-    console.error("GET_ORDER_ERROR:", error);
+    console.error("GET_ORDER_DETAILS_ERROR:", error);
 
     return NextResponse.json(
       {
-        success: false,
-        message: "Failed to fetch order.",
+        message: "Failed to load order.",
       },
       {
         status: 500,

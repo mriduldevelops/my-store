@@ -1,4 +1,3 @@
-import Image from "next/image";
 
 export default function OrderItem({ item }) {
   const variants = item?.variants ? Object.entries(item.variants) : [];
@@ -9,12 +8,10 @@ export default function OrderItem({ item }) {
     <div className="flex gap-4 border-b border-gray-100 py-5 last:border-b-0">
       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-100">
         {item?.productImage ? (
-          <Image
+          <img
             src={item.productImage}
-            alt={item.productName || "Product"}
-            fill
-            sizes="80px"
-            className="object-cover"
+            alt={item.productName}
+            className="h-20 w-20 rounded-xl object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SanityProductImage from "@/components/product/SanityProductImage";
 
 export default function CheckoutReview({
   customer,
@@ -86,8 +86,8 @@ export default function CheckoutReview({
 
                 <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                   {item.productImage ? (
-                    <Image
-                      src={item.productImage}
+                    <SanityProductImage
+                      image={item.productImage}
                       alt={item.productName || "Product"}
                       fill
                       sizes="64px"

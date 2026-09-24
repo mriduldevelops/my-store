@@ -3,13 +3,12 @@ import mongoose from "mongoose";
 const OrderItemSchema = new mongoose.Schema(
   {
     productId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       required: true,
-      ref: "Product",
     },
 
     variantId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       default: null,
     },
 

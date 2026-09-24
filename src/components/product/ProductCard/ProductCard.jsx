@@ -12,6 +12,11 @@ const isSanityImage = (value) => {
 export default function ProductCard({
   product,
 }) {
+  const productSlug =
+    typeof product?.slug === "string"
+      ? product.slug
+      : product?.slug?.current || "";
+
   const primaryImage = Array.isArray(product?.images)
     ? product.images.find(isSanityImage) ?? product?.image
     : product?.image;
@@ -20,7 +25,7 @@ export default function ProductCard({
 
   return (
     <Link
-      href={`/product/${product?.slug?.current || product.slug}`}
+      href={productSlug ? `/product/${productSlug}` : "/products"}
       className="group block"
     >
       <div className="relative">

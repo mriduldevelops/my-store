@@ -4,14 +4,16 @@ import { Container } from "@/components/ui";
 
 import ProductPage from "@/components/product/ProductPage";
 
-import { products } from "@/data/products";
+import { getProductBySlug } from "@/sanity/lib/products";
+
+export const revalidate = 60;
 
 export default async function ProductDetailsPage({ params }) {
   const { slug } = await params;
 
-  const product = products.find((item) => item.slug === slug);
+  const product = await getProductBySlug(slug);
 
-  if (!product) {
+  if (!product || product.isActive === false) {
     notFound();
   }
 
