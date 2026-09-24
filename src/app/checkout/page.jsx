@@ -19,6 +19,8 @@ import {
 
 import { addOrder } from "@/redux/slices/orderSlice";
 
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 export default function CheckoutPage() {
   const dispatch = useDispatch();
 
@@ -77,181 +79,188 @@ export default function CheckoutPage() {
   /* Payment → Success                */
   /* -------------------------------- */
 
-  const handlePaymentSuccess = (payment) => {
-    const orderNumber = `TRK-${Date.now()}`;
+  const handlePaymentSuccess = async (payment) => {
+    try {
+      const orderData = {
+        items: items.map((item) => ({
+          productId: item.productId,
+          variantId: item.variantId ?? null,
+          productName: item.productName,
+          productImage: item.productImage ?? null,
+          quantity: item.quantity,
+          price: item.price,
+          sku: item.sku ?? null,
+          variants: item.variants ?? {},
+        })),
 
-    const order = {
-      orderNumber,
+        customer,
 
-      createdAt: new Date().toISOString(),
+        paymentMethod: payment.paymentMethod,
 
-      status: "confirmed",
+        subtotal,
 
-      paymentMethod: payment.paymentMethod,
+        shipping,
 
-      customer,
+        discount,
 
-      items: items.map((item) => ({
-        productId: item.productId,
+        tax,
 
-        variantId: item.variantId ?? null,
+        total,
+      };
 
-        productName: item.productName,
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(orderData),
+      });
 
-        productImage: item.productImage ?? null,
+      const data = await response.json();
 
-        quantity: item.quantity,
+      if (!response.ok) {
+        console.error(data.message || "Failed to create order.");
 
-        price: item.price,
+        return;
+      }
 
-        sku: item.sku ?? null,
+      console.log("MONGODB ORDER:", data.order);
 
-        variants: item.variants ?? {},
-      })),
+      /*
+       * Keep this temporarily so the
+       * existing success page works.
+       */
 
-      subtotal,
+      sessionStorage.setItem(
+        "latestOrder",
+        JSON.stringify({
+          ...orderData,
+          orderNumber: data.order.orderNumber,
+          status: data.order.status,
+          createdAt: data.order.createdAt,
+        }),
+      );
 
-      shipping,
+      dispatch(clearCart());
 
-      discount,
-
-      tax,
-
-      total,
-    };
-
-    console.log("FINAL ORDER:", order);
-
-    // Add to Redux
-    dispatch(addOrder(order));
-
-    // Save all orders
-    const existingOrders = JSON.parse(sessionStorage.getItem("orders") || "[]");
-
-    sessionStorage.setItem(
-      "orders",
-      JSON.stringify([order, ...existingOrders]),
-    );
-
-    // Save latest order
-    sessionStorage.setItem("latestOrder", JSON.stringify(order));
-
-    // Clear cart
-    dispatch(clearCart());
-
-    // Go to success page
-    window.location.href = "/order-success";
+      window.location.href = "/order-success";
+    } catch (error) {
+      console.error("ORDER_CREATION_ERROR:", error);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 sm:py-14">
-      <Container>
-        {/* ================================= */}
-        {/* HEADER                             */}
-        {/* ================================= */}
+    <ProtectedRoute>
+      <main className="min-h-screen bg-gray-50 py-10 sm:py-14">
+        <Container>
+          {/* ================================= */}
+          {/* HEADER                             */}
+          {/* ================================= */}
 
-        <div className="mb-10">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">
-            Checkout
-          </p>
+          <div className="mb-10">
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">
+              Checkout
+            </p>
 
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            {step === "details" && "Complete your order"}
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              {step === "details" && "Complete your order"}
 
-            {step === "review" && "Review your order"}
+              {step === "review" && "Review your order"}
 
-            {step === "payment" && "Choose payment method"}
-          </h1>
+              {step === "payment" && "Choose payment method"}
+            </h1>
 
-          <p className="mt-3 max-w-xl text-sm leading-6 text-gray-500">
-            {step === "details" &&
-              "Enter your delivery details and review your order before payment."}
+            <p className="mt-3 max-w-xl text-sm leading-6 text-gray-500">
+              {step === "details" &&
+                "Enter your delivery details and review your order before payment."}
 
-            {step === "review" &&
-              "Check your delivery information and products before continuing."}
+              {step === "review" &&
+                "Check your delivery information and products before continuing."}
 
-            {step === "payment" &&
-              "Choose your preferred payment method to complete your order."}
-          </p>
-        </div>
-
-        {/* ================================= */}
-        {/* CHECKOUT STEPS                     */}
-        {/* ================================= */}
-
-        <div className="mb-8 flex items-center">
-          <Step
-            number="1"
-            label="Details"
-            active={step === "details"}
-            completed={step === "review" || step === "payment"}
-          />
-
-          <div className="mx-3 h-px flex-1 bg-gray-200" />
-
-          <Step
-            number="2"
-            label="Review"
-            active={step === "review"}
-            completed={step === "payment"}
-          />
-
-          <div className="mx-3 h-px flex-1 bg-gray-200" />
-
-          <Step number="3" label="Payment" active={step === "payment"} />
-        </div>
-
-        {/* ================================= */}
-        {/* DETAILS                            */}
-        {/* ================================= */}
-
-        {step === "details" && (
-          <div className="grid gap-8 lg:grid-cols-[1fr_420px] lg:items-start">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
-              <CheckoutForm onSuccess={handleDetailsSubmit} />
-            </div>
-
-            <div className="lg:sticky lg:top-28">
-              <CheckoutSummary />
-            </div>
+              {step === "payment" &&
+                "Choose your preferred payment method to complete your order."}
+            </p>
           </div>
-        )}
 
-        {/* ================================= */}
-        {/* REVIEW                             */}
-        {/* ================================= */}
+          {/* ================================= */}
+          {/* CHECKOUT STEPS                     */}
+          {/* ================================= */}
 
-        {step === "review" && (
-          <div className="mx-auto max-w-3xl">
-            <CheckoutReview
-              customer={customer}
-              items={items}
-              subtotal={subtotal}
-              shipping={shipping}
-              discount={discount}
-              tax={tax}
-              onBack={() => setStep("details")}
-              onPlaceOrder={handleContinueToPayment}
+          <div className="mb-8 flex items-center">
+            <Step
+              number="1"
+              label="Details"
+              active={step === "details"}
+              completed={step === "review" || step === "payment"}
             />
-          </div>
-        )}
 
-        {/* ================================= */}
-        {/* PAYMENT                            */}
-        {/* ================================= */}
+            <div className="mx-3 h-px flex-1 bg-gray-200" />
 
-        {step === "payment" && (
-          <div className="mx-auto max-w-3xl">
-            <CheckoutPayment
-              total={total}
-              customer={customer}
-              onBack={() => setStep("review")}
-              onPaymentSuccess={handlePaymentSuccess}
+            <Step
+              number="2"
+              label="Review"
+              active={step === "review"}
+              completed={step === "payment"}
             />
+
+            <div className="mx-3 h-px flex-1 bg-gray-200" />
+
+            <Step number="3" label="Payment" active={step === "payment"} />
           </div>
-        )}
-      </Container>
-    </main>
+
+          {/* ================================= */}
+          {/* DETAILS                            */}
+          {/* ================================= */}
+
+          {step === "details" && (
+            <div className="grid gap-8 lg:grid-cols-[1fr_420px] lg:items-start">
+              <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+                <CheckoutForm onSuccess={handleDetailsSubmit} />
+              </div>
+
+              <div className="lg:sticky lg:top-28">
+                <CheckoutSummary />
+              </div>
+            </div>
+          )}
+
+          {/* ================================= */}
+          {/* REVIEW                             */}
+          {/* ================================= */}
+
+          {step === "review" && (
+            <div className="mx-auto max-w-3xl">
+              <CheckoutReview
+                customer={customer}
+                items={items}
+                subtotal={subtotal}
+                shipping={shipping}
+                discount={discount}
+                tax={tax}
+                onBack={() => setStep("details")}
+                onPlaceOrder={handleContinueToPayment}
+              />
+            </div>
+          )}
+
+          {/* ================================= */}
+          {/* PAYMENT                            */}
+          {/* ================================= */}
+
+          {step === "payment" && (
+            <div className="mx-auto max-w-3xl">
+              <CheckoutPayment
+                total={total}
+                customer={customer}
+                onBack={() => setStep("review")}
+                onPaymentSuccess={handlePaymentSuccess}
+              />
+            </div>
+          )}
+        </Container>
+      </main>
+    </ProtectedRoute>
   );
 }
 

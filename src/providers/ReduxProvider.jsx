@@ -5,46 +5,34 @@ import { Provider } from "react-redux";
 
 import { store } from "@/redux/store";
 import { hydrateCart } from "@/redux/slices/cartSlice";
+import AuthProvider from "@/components/auth/AuthProvider";
 
 const CART_STORAGE_KEY = "traikar-cart";
 
-export default function ReduxProvider({
-  children,
-}) {
+export default function ReduxProvider({ children }) {
   /*
    * Restore cart when application starts
    */
 
   useEffect(() => {
     try {
-      const storedCart =
-        localStorage.getItem(
-          CART_STORAGE_KEY
-        );
+      const storedCart = localStorage.getItem(CART_STORAGE_KEY);
 
       if (!storedCart) {
         return;
       }
 
-      const parsedCart =
-        JSON.parse(storedCart);
+      const parsedCart = JSON.parse(storedCart);
 
       if (!Array.isArray(parsedCart)) {
         return;
       }
 
-      store.dispatch(
-        hydrateCart(parsedCart)
-      );
+      store.dispatch(hydrateCart(parsedCart));
     } catch (error) {
-      console.error(
-        "Failed to restore cart:",
-        error
-      );
+      console.error("Failed to restore cart:", error);
 
-      localStorage.removeItem(
-        CART_STORAGE_KEY
-      );
+      localStorage.removeItem(CART_STORAGE_KEY);
     }
   }, []);
 
@@ -53,31 +41,25 @@ export default function ReduxProvider({
    */
 
   useEffect(() => {
-    const unsubscribe =
-      store.subscribe(() => {
-        try {
-          const state = store.getState();
+    const unsubscribe = store.subscribe(() => {
+      try {
+        const state = store.getState();
 
-          localStorage.setItem(
-            CART_STORAGE_KEY,
-            JSON.stringify(
-              state.cart.items
-            )
-          );
-        } catch (error) {
-          console.error(
-            "Failed to save cart:",
-            error
-          );
-        }
-      });
+        localStorage.setItem(
+          CART_STORAGE_KEY,
+          JSON.stringify(state.cart.items),
+        );
+      } catch (error) {
+        console.error("Failed to save cart:", error);
+      }
+    });
 
     return unsubscribe;
   }, []);
 
   return (
     <Provider store={store}>
-      {children}
+      <AuthProvider>{children}</AuthProvider>
     </Provider>
   );
 }

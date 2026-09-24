@@ -1,16 +1,29 @@
 import mongoose from "mongoose";
 
-const VariantSchema = new mongoose.Schema(
+const ProductSchema = new mongoose.Schema(
   {
-    id: {
+    name: {
       type: String,
       required: true,
+      trim: true,
     },
 
-    options: {
-      type: Map,
-      of: String,
-      default: {},
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      default: "",
+    },
+
+    images: {
+      type: [String],
+      default: [],
     },
 
     price: {
@@ -22,52 +35,13 @@ const VariantSchema = new mongoose.Schema(
     compareAtPrice: {
       type: Number,
       default: null,
-    },
-
-    stock: {
-      type: Number,
-      default: 0,
       min: 0,
     },
 
-    sku: {
+    category: {
       type: String,
-      default: null,
-    },
-  },
-  {
-    _id: false,
-  }
-);
-
-const ProductSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
+      default: "",
       trim: true,
-    },
-
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
-    stock: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
-    sku: {
-      type: String,
-      default: null,
-    },
-
-    variants: {
-      type: [VariantSchema],
-      default: [],
     },
 
     isActive: {
@@ -77,11 +51,8 @@ const ProductSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const Product =
-  mongoose.models.Product ||
+export default mongoose.models.Product ||
   mongoose.model("Product", ProductSchema);
-
-export default Product;

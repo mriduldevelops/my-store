@@ -1,7 +1,6 @@
 import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Layout from "@/components/layout/Layout";
-import ReduxProvider from "@/providers/ReduxProvider";
+import StudioGate from "@/components/StudioGate";
 
 export const bodyFont = Poppins({
   subsets: ["latin"],
@@ -27,9 +26,7 @@ export default function RootLayout({ children }) {
       className={`${bodyFont.variable} ${headingFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
-        <ReduxProvider>
-          <Layout>{children}</Layout>
-        </ReduxProvider>
+        <StudioGate>{children}</StudioGate>
       </body>
     </html>
   );
