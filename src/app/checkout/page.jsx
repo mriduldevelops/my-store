@@ -81,72 +81,72 @@ export default function CheckoutPage() {
 
   const handlePaymentSuccess = async (payment) => {
     try {
-      const orderData = {
-        items: items.map((item) => ({
-          productId: item.productId,
-          variantId: item.variantId ?? null,
-          productName: item.productName,
-          productImage: item.productImage ?? null,
-          quantity: item.quantity,
-          price: item.price,
-          sku: item.sku ?? null,
-          variants: item.variants ?? {},
-        })),
+      /* -------------------------------- */
+      /* COD                               */
+      /* -------------------------------- */
 
-        customer,
+      if (payment.paymentMethod === "cod") {
+        sessionStorage.setItem(
+          "latestOrder",
+          JSON.stringify({
+            orderNumber: payment.order.orderNumber,
+            status: payment.order.status,
+            createdAt: payment.order.createdAt,
+            total: payment.order.total,
+          }),
+        );
 
-        paymentMethod: payment.paymentMethod,
+        dispatch(clearCart());
 
-        subtotal,
+        window.location.href = `/order-success?orderNumber=${payment.order.orderNumber}`;
 
-        shipping,
+        return;
+      }
 
-        discount,
+      /* -------------------------------- */
+      /* Online Payment                    */
+      /* -------------------------------- */
 
-        tax,
-
-        total,
-      };
-
-      const response = await fetch("/api/orders", {
+      const response = await fetch("/api/payment/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(orderData),
+        body: JSON.stringify({
+          razorpayOrderId: payment.razorpayOrderId,
+
+          razorpayPaymentId: payment.razorpayPaymentId,
+
+          razorpaySignature: payment.razorpaySignature,
+
+          items,
+
+          customer,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        console.error(data.message || "Failed to create order.");
-
-        return;
+        throw new Error(data.message || "Payment verification failed.");
       }
-
-      console.log("MONGODB ORDER:", data.order);
-
-      /*
-       * Keep this temporarily so the
-       * existing success page works.
-       */
 
       sessionStorage.setItem(
         "latestOrder",
         JSON.stringify({
-          ...orderData,
           orderNumber: data.order.orderNumber,
           status: data.order.status,
           createdAt: data.order.createdAt,
+          total: data.order.total,
         }),
       );
 
       dispatch(clearCart());
 
-      window.location.href = "/order-success";
+      window.location.href = `/order-success?orderNumber=${data.order.orderNumber}`;
     } catch (error) {
-      console.error("ORDER_CREATION_ERROR:", error);
+      console.error("PAYMENT_VERIFICATION_ERROR:", error);
     }
   };
 
@@ -253,6 +253,7 @@ export default function CheckoutPage() {
               <CheckoutPayment
                 total={total}
                 customer={customer}
+                items={items}
                 onBack={() => setStep("review")}
                 onPaymentSuccess={handlePaymentSuccess}
               />

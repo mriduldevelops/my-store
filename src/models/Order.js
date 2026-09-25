@@ -169,7 +169,7 @@ const OrderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["online", "cod"],
+      enum: ["cod", "online"],
       required: true,
     },
 
@@ -177,6 +177,22 @@ const OrderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
+    },
+
+    razorpayOrderId: {
+      type: String,
+      default: null,
+      index: true,
+    },
+
+    razorpayPaymentId: {
+      type: String,
+      default: null,
+    },
+
+    razorpaySignature: {
+      type: String,
+      default: null,
     },
 
     /* ----------------------------- */

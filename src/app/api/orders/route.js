@@ -7,13 +7,21 @@ import Order from "@/models/Order";
 
 import { getProductForOrder } from "@/sanity/lib/orderProducts";
 import { urlFor } from "@/sanity/lib/image";
+
+/* -------------------------------- */
+/* Generate Order Number             */
+/* -------------------------------- */
+
 function generateOrderNumber() {
   const timestamp = Date.now().toString(36).toUpperCase();
-
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
 
   return `ORD-${timestamp}-${random}`;
 }
+
+/* -------------------------------- */
+/* GET - User Orders                 */
+/* -------------------------------- */
 
 export async function GET() {
   try {
@@ -60,13 +68,15 @@ export async function GET() {
   }
 }
 
+/* -------------------------------- */
+/* POST - COD Order Only             */
+/* -------------------------------- */
+
 export async function POST(request) {
   try {
-    /*
-     * --------------------------------
-     * Authentication
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Authentication                    */
+    /* -------------------------------- */
 
     const user = await getAuthenticatedUser();
 
@@ -74,7 +84,7 @@ export async function POST(request) {
       return NextResponse.json(
         {
           success: false,
-          message: "Unauthorized",
+          message: "Unauthorized.",
         },
         {
           status: 401,
@@ -82,21 +92,36 @@ export async function POST(request) {
       );
     }
 
-    /*
-     * --------------------------------
-     * Request body
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Request Body                      */
+    /* -------------------------------- */
 
     const body = await request.json();
 
-    const { items, customer, paymentMethod = "razorpay" } = body;
+    const { items, customer, paymentMethod } = body;
 
-    /*
-     * --------------------------------
-     * Basic validation
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Payment Method                    */
+    /* -------------------------------- */
+
+    // This endpoint is ONLY for COD.
+    // Online payments must go through Razorpay.
+    if (paymentMethod !== "cod") {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid payment method. Use the Razorpay payment flow for online payments.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    /* -------------------------------- */
+    /* Basic Validation                  */
+    /* -------------------------------- */
 
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
@@ -122,11 +147,9 @@ export async function POST(request) {
       );
     }
 
-    /*
-     * --------------------------------
-     * Validate customer
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Validate Customer                 */
+    /* -------------------------------- */
 
     const firstName = String(customer.firstName || "").trim();
 
@@ -169,11 +192,9 @@ export async function POST(request) {
       );
     }
 
-    /*
-     * --------------------------------
-     * Validate products from Sanity
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Validate Products From Sanity     */
+    /* -------------------------------- */
 
     const validatedItems = [];
 
@@ -183,6 +204,10 @@ export async function POST(request) {
       const variantId = item.variantId ? String(item.variantId).trim() : null;
 
       const quantity = Number(item.quantity);
+
+      /* -------------------------------- */
+      /* Product ID                       */
+      /* -------------------------------- */
 
       if (!productId) {
         return NextResponse.json(
@@ -196,6 +221,10 @@ export async function POST(request) {
         );
       }
 
+      /* -------------------------------- */
+      /* Quantity                         */
+      /* -------------------------------- */
+
       if (!Number.isInteger(quantity) || quantity < 1) {
         return NextResponse.json(
           {
@@ -208,10 +237,9 @@ export async function POST(request) {
         );
       }
 
-      /*
-       * Fetch the actual product
-       * from Sanity.
-       */
+      /* -------------------------------- */
+      /* Fetch Product From Sanity        */
+      /* -------------------------------- */
 
       const product = await getProductForOrder(productId);
 
@@ -227,13 +255,11 @@ export async function POST(request) {
         );
       }
 
-      let selectedVariant = null;
+      /* -------------------------------- */
+      /* Variant                          */
+      /* -------------------------------- */
 
-      /*
-       * --------------------------------
-       * Variant validation
-       * --------------------------------
-       */
+      let selectedVariant = null;
 
       if (variantId) {
         selectedVariant = product.variants?.find(
@@ -252,6 +278,10 @@ export async function POST(request) {
           );
         }
 
+        /* -------------------------------- */
+        /* Variant Active                    */
+        /* -------------------------------- */
+
         if (selectedVariant.isActive === false) {
           return NextResponse.json(
             {
@@ -264,11 +294,9 @@ export async function POST(request) {
           );
         }
 
-        /*
-         * --------------------------------
-         * Stock validation
-         * --------------------------------
-         */
+        /* -------------------------------- */
+        /* Stock                             */
+        /* -------------------------------- */
 
         if (
           !Number.isInteger(selectedVariant.stock) ||
@@ -286,11 +314,9 @@ export async function POST(request) {
         }
       }
 
-      /*
-       * --------------------------------
-       * Server-side price
-       * --------------------------------
-       */
+      /* -------------------------------- */
+      /* Server-Side Price                 */
+      /* -------------------------------- */
 
       const price = selectedVariant?.price ?? product.price;
 
@@ -306,17 +332,19 @@ export async function POST(request) {
         );
       }
 
+      /* -------------------------------- */
+      /* Product Image                     */
+      /* -------------------------------- */
+
       const productImage = selectedVariant?.image
         ? urlFor(selectedVariant.image).width(600).url()
         : product.image
           ? urlFor(product.image).width(600).url()
           : null;
 
-      /*
-       * --------------------------------
-       * Build trusted order item
-       * --------------------------------
-       */
+      /* -------------------------------- */
+      /* Trusted Order Item                */
+      /* -------------------------------- */
 
       validatedItems.push({
         productId: product._id,
@@ -337,68 +365,55 @@ export async function POST(request) {
       });
     }
 
-    /*
-     * --------------------------------
-     * Calculate subtotal
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Calculate Subtotal                */
+    /* -------------------------------- */
 
     const subtotal = validatedItems.reduce((total, item) => {
       return total + item.price * item.quantity;
     }, 0);
 
-    /*
-     * --------------------------------
-     * Shipping
-     * --------------------------------
-     *
-     * Keep your current shipping
-     * rules here.
-     */
+    /* -------------------------------- */
+    /* Shipping                          */
+    /* -------------------------------- */
 
     const shipping = 0;
 
-    /*
-     * --------------------------------
-     * Discount
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Discount                          */
+    /* -------------------------------- */
 
     const discount = 0;
 
-    /*
-     * --------------------------------
-     * Tax
-     * --------------------------------
-     *
-     * Keep 0 until your GST/tax
-     * calculation is implemented.
-     */
+    /* -------------------------------- */
+    /* Tax                               */
+    /* -------------------------------- */
 
     const tax = 0;
 
-    /*
-     * --------------------------------
-     * Final total
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Final Total                       */
+    /* -------------------------------- */
 
     const total = subtotal + shipping + tax - discount;
 
-    /*
-     * --------------------------------
-     * Create order
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Connect Database                  */
+    /* -------------------------------- */
 
     await connectDB();
+
+    /* -------------------------------- */
+    /* Create COD Order                  */
+    /* -------------------------------- */
 
     const order = await Order.create({
       userId: user._id,
 
       orderNumber: generateOrderNumber(),
 
-      status: "pending",
+      // COD orders are confirmed immediately.
+      status: "confirmed",
 
       customer: {
         firstName,
@@ -414,8 +429,10 @@ export async function POST(request) {
 
       items: validatedItems,
 
-      paymentMethod,
+      paymentMethod: "cod",
 
+      // Payment is still pending because
+      // customer pays on delivery.
       paymentStatus: "pending",
 
       subtotal,
@@ -429,11 +446,9 @@ export async function POST(request) {
       total,
     });
 
-    /*
-     * --------------------------------
-     * Response
-     * --------------------------------
-     */
+    /* -------------------------------- */
+    /* Response                          */
+    /* -------------------------------- */
 
     return NextResponse.json(
       {
@@ -443,12 +458,14 @@ export async function POST(request) {
           id: order._id,
           orderNumber: order.orderNumber,
           status: order.status,
+          paymentMethod: order.paymentMethod,
           paymentStatus: order.paymentStatus,
           subtotal: order.subtotal,
           shipping: order.shipping,
           discount: order.discount,
           tax: order.tax,
           total: order.total,
+          createdAt: order.createdAt,
         },
       },
       {
@@ -456,12 +473,12 @@ export async function POST(request) {
       },
     );
   } catch (error) {
-    console.error("CREATE_ORDER_ERROR:", error);
+    console.error("CREATE_COD_ORDER_ERROR:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to create order.",
+        message: "Failed to place COD order.",
       },
       {
         status: 500,
